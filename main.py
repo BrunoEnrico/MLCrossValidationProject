@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from data_processing import DataProcessing
 from machine_learning import MachineLearning
 
@@ -6,10 +7,9 @@ from machine_learning import MachineLearning
 class Main:
 
     def __init__(self):
-        pass
+        self.seed = 5
 
-    @staticmethod
-    def process():
+    def process(self):
 
         uri = "machine-learning-carros.csv"
 
@@ -18,13 +18,15 @@ class Main:
         feature = dados.drop(columns=["vendido"], axis=1).values
         target = dados["vendido"].values
 
+        np.random.seed(self.seed)
+
         feature_train, feature_test, target_train, target_test = DataProcessing.get_train_test_split(feature, target,
                                                                                                      test_size = 0.25,
                                                                                                      stratify = target)
         dummy_classifier = MachineLearning.get_dummy_classifier()
         dummy_fit = MachineLearning.fit_dummy_classifier(dummy_classifier, feature_train, target_train)
         dummy_score = MachineLearning.get_dummy_score(dummy_fit, feature_test, target_test)
-        #print(f"The Dummy model's accuracy is {round(dummy_score * 100, 2)}")
+        print(f"The Dummy model's accuracy is {round(dummy_score * 100, 2)}")
 
         decision_tree_classifier = MachineLearning.get_decision_tree_classifier(max_depth=2)
         decision_tree_fit = MachineLearning.get_decision_tree_fit(decision_tree_classifier, feature_train, target_train)
@@ -32,8 +34,13 @@ class Main:
         decision_tree_score = MachineLearning.get_decision_tree_score(decision_tree_fit, feature_test, target_test)
         print(f"The Decision Tree Score was {decision_tree_score * 100}%")
 
+        cross_validate_results = MachineLearning.get_cross_validate(decision_tree_classifier, feature, target, cv=3,
+                                                                    return_train_score=False)
+
+
 
 
 
 if __name__ == '__main__':
-    Main.process()
+    main = Main()
+    main.process()

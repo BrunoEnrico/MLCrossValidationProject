@@ -1,5 +1,7 @@
 from sklearn.dummy import DummyClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import cross_validate
+from sklearn.base import BaseEstimator
 from typing import Any
 import numpy as np
 
@@ -87,3 +89,7 @@ class MachineLearning:
         """
 
         return decision_tree.score(predicted_values, target_test, sample_weight)
+
+    @staticmethod
+    def get_cross_validate(model: BaseEstimator, feature: np.ndarray, target: np.ndarray, cv: int, **kwargs):
+        return cross_validate(model, feature, target, cv=cv, **kwargs)
