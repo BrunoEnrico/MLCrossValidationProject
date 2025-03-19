@@ -1,10 +1,12 @@
 from sklearn.dummy import DummyClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import cross_validate
+from sklearn.model_selection import cross_validate, KFold, StratifiedKFold, GroupKFold
+from sklearn.preprocessing import StandardScaler
 from sklearn.base import BaseEstimator
+from sklearn.svm import SVC
+from sklearn.pipeline import Pipeline
 from typing import Any
 import numpy as np
-
 from data_processing import DataProcessing
 
 
@@ -91,5 +93,49 @@ class MachineLearning:
         return decision_tree.score(predicted_values, target_test, sample_weight)
 
     @staticmethod
-    def get_cross_validate(model: BaseEstimator, feature: np.ndarray, target: np.ndarray, cv: int, **kwargs):
+    def get_cross_validate(model: BaseEstimator, feature: np.ndarray, target: np.ndarray, cv: Any, **kwargs):
         return cross_validate(model, feature, target, cv=cv, **kwargs)
+
+    @staticmethod
+    def get_k_fold(**kwargs) -> KFold:
+        return KFold(**kwargs)
+
+    @staticmethod
+    def get_stratified_k_fold(**kwargs) -> StratifiedKFold:
+        return StratifiedKFold(**kwargs)
+
+    @staticmethod
+    def get_groups_k_fold(**kwargs) -> GroupKFold:
+        return GroupKFold(**kwargs)
+
+    @staticmethod
+    def get_standard_scaler(**kwargs) -> StandardScaler:
+        return StandardScaler(**kwargs)
+
+    @staticmethod
+    def fit_scaler(scaler: StandardScaler, feature: np.ndarray) -> Any:
+        return scaler.fit(feature)
+
+    @staticmethod
+    def transform_scaler(scaler: StandardScaler, feature: np.ndarray) -> Any:
+        return scaler.transform(feature)
+
+    @staticmethod
+    def get_svc(**kwargs) -> SVC:
+        return SVC(**kwargs)
+
+    @staticmethod
+    def fit_svc(svc: Any, feature: np.ndarray, target: np.ndarray, sample_weight: Any = None) -> Any:
+        return svc.fit(feature, target, sample_weight=sample_weight)
+
+    @staticmethod
+    def predict_svc(svc: SVC, feature: np.ndarray) -> Any:
+        return svc.predict(DataProcessing.convert_np64_to_np32(feature))
+
+    @staticmethod
+    def get_svc_score(svc: SVC, predicted_values: np.ndarray, target_test: np.ndarray) -> float:
+        return svc.score(predicted_values, target_test)
+
+    @staticmethod
+    def get_pipeline(args: list) -> Pipeline:
+        return Pipeline(args)
